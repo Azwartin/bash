@@ -1,0 +1,40 @@
+#!/bin/bash
+# сценарий для поиска определенных слов на web странице
+
+usage() {
+	cat <<- _EOF_
+		This script for search word's sequence on web page \n
+		Params 
+		-p or --page url of page (with http or https)
+		-w or --word word sequence for search
+		-h or --help shows this help
+	_EOF_
+	return
+}
+
+page=""
+word=""
+
+while [[ -n $1 ]]; do
+	case $1 in
+		-p | --page)	shift
+						page=$1
+						;;
+		-w | --word)	shift
+						word=$1
+						;;
+		-h | --help)	usage
+						exit 0
+						;;
+	esac
+	shift
+done
+
+if (( ${#page}==0 || ${#word}==0 )); then
+	echo "Page and Word required."
+	usage
+	exit 1
+fi
+
+
+wget "$page" -q -O - | nl | sed '/<script/,/<\/script>/d' | sed '/<style/,/<\/style>/d' | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | grep "$word"
