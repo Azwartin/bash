@@ -1,0 +1,21 @@
+#!/bin/bash
+
+getSnowLine() {
+  w=$1
+  pos=$(shuf -i 1-$w -n 1)
+  printf "%${w}s\n" | sed "s/ /*/$pos"
+}
+
+read h w < <(stty size)
+snow=""
+until ((h == 0)); do
+  snow+=$(getSnowLine $w)
+  h=$h-1
+done
+len=${#snow}
+while true; do
+  snow="$(getSnowLine $w) $snow"
+  snow=${snow:0:$len}
+  echo "$snow"
+  sleep 0.07
+done
